@@ -1,0 +1,109 @@
+#NANO_KERNEL=NANO
+NANO_MEDIASIZE=30535680
+NANO_SECTS=63
+NANO_HEADS=255
+NANO_DRIVE=mmcsd0
+NANO_IMAGES=2
+
+# Size of the /tmp+/var ramdisk in 512 bytes sectors
+# 20480=10Mb (usefull for log files)
+NANO_RAM_TMPVARSIZE=20480
+
+# Size of the /etc ramdisk in 512 bytes sectors
+NANO_RAM_ETCSIZE=10240
+
+# Boot0cfg configuration mode
+NANO_BOOT0CFG="-o packet -s 1 -m 3 -t 18"
+
+# CONF_BUILD=' '
+
+# CONF_INSTALL=' '
+
+# Options to put in make.conf during both build- & installworld.
+# See the file /usr/src/tools/build/options or man src.conf for details
+# WITHOUT_INFO= incompatible for installing a dependency of Quagga
+# WITHOUT_FORTH= incompatible with boot flags (need to be confirmed).
+# WITHOUT_GROFF= incompatible with isc-dhcp-server (needed for build unused man page)
+# WITHOUT_KVM= and WITHOUT_KVM_SUPPORT= prevent buildworld to complet (don't know why)
+
+CONF_WORLD='
+WITHOUT_ATM=
+WITHOUT_AUDIT=
+WITHOUT_BIND=
+WITHOUT_BIND_DNSSEC=
+WITHOUT_BIND_ETC=
+WITHOUT_BIND_LIBS_LWRES=
+WITHOUT_BIND_MTREE=
+WITHOUT_BIND_NAMED=
+WITHOUT_BIND_UTILS=
+WITHOUT_BLUETOOTH=YES
+WITHOUT_CALENDAR=YES
+WITHOUT_CVS=
+WITHOUT_DICT=
+WITHOUT_EXAMPLES=YES
+WITHOUT_FLOPPY=YES
+WITHOUT_FREEBSD_UPDATE=YES
+WITHOUT_GAMES=YES
+WITHOUT_GDB=
+WITHOUT_IPX=
+WITHOUT_IPX_SUPPORT=
+WITHOUT_JAIL=
+WITHOUT_KERBEROS=
+WITHOUT_KERBEROS_SUPPORT=
+WITHOUT_LOCATE=
+WITHOUT_LPR=
+WITHOUT_MAN=YES
+WITHOUT_MAN_UTILS=
+WITHOUT_QUOTAS=
+WITHOUT_RESCUE=
+WITHOUT_SENDMAIL=
+WITHOUT_SHAREDOCS=
+WITHOUT_TELNET=YES
+WITHOUT_WIRELESS=YES
+WITHOUT_WIRELESS_SUPPORT=YES
+WITHOUT_WPA_SUPPLICANT_EAPOL=YES
+WITHOUT_ZFS=YES
+'
+
+# -----------------------------------------------------------------------------
+# ADD PORTS
+# -----------------------------------------------------------------------------
+
+add_port () {
+port=`echo $1 | sed -e 's/\//_/'`
+eval "
+add_port_${port} () {
+mkdir -p \${NANO_WORLDDIR}/usr/ports
+mount -t unionfs -o noatime /usr/src \
+\${NANO_WORLDDIR}/usr/src
+mount -t unionfs -o noatime /usr/ports \
+\${NANO_WORLDDIR}/usr/ports
+mkdir -p \${NANO_WORLDDIR}/dev
+mount -t devfs devfs \${NANO_WORLDDIR}/dev
+mkdir -p \${NANO_WORLDDIR}/usr/pobj
+mkdir -p \${NANO_WORLDDIR}/usr/workdir
+cp /etc/resolv.conf \${NANO_WORLDDIR}/etc/resolv.conf
+chroot \${NANO_WORLDDIR} /bin/sh -exc \
+'make WRKDIRPREFIX=/usr/workdir -C /usr/ports/$1 \
+install BATCH=yes $2'
+rm \${NANO_WORLDDIR}/etc/resolv.conf
+rm -rf \${NANO_WORLDDIR}/usr/obj
+rm -rf \${NANO_WORLDDIR}/usr/pobj
+rm -rf \${NANO_WORLDDIR}/usr/workdir
+umount \${NANO_WORLDDIR}/dev
+umount \${NANO_WORLDDIR}/usr/ports
+umount \${NANO_WORLDDIR}/usr/src
+rmdir \${NANO_WORLDDIR}/usr/ports
+}
+customize_cmd add_port_${port}
+"
+}
+
+# -----------------------------------------------------------------------------
+# PORTS
+# -----------------------------------------------------------------------------
+# Add net-snmp (An extendable SNMP implementation)
+#add_port "net-mgmt/net-snmp"
+
+## Add bash (The GNU Project's Bourne Again SHell)
+add_port "shells/bash"

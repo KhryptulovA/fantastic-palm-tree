@@ -1,0 +1,4 @@
+### Fix trouble with eMMC ##################
+hw.sdhci.quirk_clear=0x4000000
+hw.sdhci.quirk_set=0x2000000
+###########################################
