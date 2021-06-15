@@ -43,7 +43,7 @@ NANO_NAME=full
 NANO_SRC=/usr/src
 
 # Where nanobsd additional files live under the source tree
-NANO_TOOLS=tools/tools/nanobsd
+NANO_TOOLS=tools/tools/fantastic-palm-tree
 
 # Where cust_pkgng() finds packages to install
 NANO_PACKAGE_DIR=${NANO_SRC}/${NANO_TOOLS}/Pkg
