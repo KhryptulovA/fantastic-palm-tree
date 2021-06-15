@@ -1,5 +1,7 @@
 ### fantastic-palm-tree
 ### custom nanobsd for my board :)
+cd to /usr/src/tools/tools
+git clone 
 cd to fantastic-palm-tree and start build image 
 
 
