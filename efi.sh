@@ -124,9 +124,7 @@ create_diskimage ( ) (
 	fi
 
 	trap "echo 'Running exit trap code' ; df -i ${MNT} ; nano_umount ${MNT} || true ; mdconfig -d -u $MD" 1 2 15 EXIT
-#echo "TEST!!!" > testotest	
-#echo ${IMG} > testotest
-#exit 0
+# test GPT part
 	gpart create -s GPT ${MD}
 	gpart add -t efi -s 200M ${MD}
 	gpart add -t freebsd-ufs -s 5G ${MD}
@@ -161,6 +159,13 @@ create_diskimage ( ) (
 	echo "Generating mtree..."
 	( cd "${MNT}" && mtree -c ) > ${NANO_LOG}/_.mtree
 	( cd "${MNT}" && du -k ) > ${NANO_LOG}/_.du
+	# Create efi boot
+	EFI=/tmp/boot
+	mkdir ${EFI}
+	mount -t msdosfs /dev/${MD}p1 ${EFI}
+	mkdir -p ${EFI}/EFI/BOOT
+	cp ${MNT}/boot/loader.efi ${EFI}/EFI/BOOT/BOOTX64.efi
+	umount ${EFI}
 	nano_umount "${MNT}"
 
 	if [ $NANO_IMAGES -gt 1 -a $NANO_INIT_IMG2 -gt 0 ] ; then
