@@ -4,7 +4,7 @@
 cd to /usr/src/tools/tools
 
 
-git clone https://github.com/KhryptulovA/fantastic-palm-tree.git
+`git clone https://github.com/KhryptulovA/fantastic-palm-tree.git`
 
 
 cd to fantastic-palm-tree and start build image 
