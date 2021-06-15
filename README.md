@@ -5,4 +5,4 @@ sh nanobsd.sh -c custom.conf
 
 
 #use -w (world) -k (kernel) or -b (world & kernel) option
-#for skip the build stages
+for skip the build stages
